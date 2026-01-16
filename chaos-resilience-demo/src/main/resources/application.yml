@@ -1,0 +1,71 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: chaos-resilience-demo
+  profiles:
+    active: chaos-monkey
+
+# ============================================
+# CHAOS MONKEY CONFIGURATION
+# ============================================
+chaos:
+  monkey:
+    enabled: false  # Demo başında kapalı
+    watcher:
+      service: true
+      controller: false
+      repository: false
+      rest-controller: false
+    assaults:
+      level: 1  # Her request'e uygulanır
+      latencyActive: true
+      latencyRangeStart: 3000  # Min 3 saniye
+      latencyRangeEnd: 5000    # Max 5 saniye
+      exceptionsActive: false
+      killApplicationActive: false
+
+# ============================================
+# RESILIENCE4J CONFIGURATION  
+# ============================================
+resilience4j:
+  circuitbreaker:
+    instances:
+      externalService:
+        registerHealthIndicator: true
+        slidingWindowSize: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowType: COUNT_BASED
+        minimumNumberOfCalls: 3
+        
+  timelimiter:
+    instances:
+      externalService:
+        timeoutDuration: 2s
+        cancelRunningFuture: true
+
+# ============================================
+# ACTUATOR ENDPOINTS
+# ============================================
+management:
+  endpoint:
+    chaosmonkey:
+      enabled: true
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: health,info,chaosmonkey,circuitbreakers,metrics
+
+# ============================================
+# LOGGING
+# ============================================
+logging:
+  level:
+    com.demo.chaos: DEBUG
+    de.codecentric.spring.boot.chaos.monkey: INFO
+    io.github.resilience4j: DEBUG

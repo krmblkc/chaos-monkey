@@ -1,0 +1,17 @@
+#!/bin/sh
+# Maven Wrapper Script
+
+# Determine the directory containing this script
+if [ -z "$MAVEN_BASEDIR" ]; then
+  MAVEN_BASEDIR="$(cd "$(dirname "$0")" && pwd)"
+fi
+
+# Download maven-wrapper.jar if not present
+WRAPPER_JAR="$MAVEN_BASEDIR/.mvn/wrapper/maven-wrapper.jar"
+if [ ! -f "$WRAPPER_JAR" ]; then
+  mkdir -p "$MAVEN_BASEDIR/.mvn/wrapper"
+  curl -sL "https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper/3.2.0/maven-wrapper-3.2.0.jar" -o "$WRAPPER_JAR"
+fi
+
+# Use Java to execute maven-wrapper.jar
+exec java -jar "$WRAPPER_JAR" "$@"
